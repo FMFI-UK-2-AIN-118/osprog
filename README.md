@@ -9,6 +9,7 @@ Labs
 * [Lab 1](l01) (programs, dynamic libraries)
 * [Lab 2](l02) (copycat)
 * [Lab 3](l03) (PipeWatch)
+* [Lab 4](l04) (Buffer)
 
 Assignments
 -----------
