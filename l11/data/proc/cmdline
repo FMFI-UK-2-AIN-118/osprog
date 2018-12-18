@@ -1,0 +1,1 @@
+BOOT_IMAGE=/boot/vmlinuz-4.4.2-gentoo root=/dev/sda5 resume=/dev/sda6 pcie_aspm=force i915.i915_enable_rc6=1

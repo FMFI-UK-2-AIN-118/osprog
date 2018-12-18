@@ -1,0 +1,9 @@
+  2: [ 0]   : control
+  3: [ 0- 0]: digital audio playback
+  4: [ 0- 0]: digital audio capture
+  5: [ 0- 3]: digital audio playback
+  6: [ 0- 7]: digital audio playback
+  7: [ 0- 8]: digital audio playback
+  8: [ 0- 0]: hardware dependent
+  9: [ 0- 3]: hardware dependent
+ 33:        : timer
