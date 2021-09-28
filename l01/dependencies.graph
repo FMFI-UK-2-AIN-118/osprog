@@ -1,0 +1,8 @@
+digraph {
+	"number.h" -> "number.o";
+	"number.c" -> "number.o";
+	"number.h" -> "program.o";
+	"program.c" -> "program.o";
+	"number.o" -> "program";
+	"program.o" -> "program";
+}
