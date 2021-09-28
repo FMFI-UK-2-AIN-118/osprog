@@ -6,7 +6,7 @@ Programming in Operating Systems
 Labs
 ----
 
-TBA
+* [Lab 1](l01) (programs, dynamic libraries)
 
 Assignments
 -----------
