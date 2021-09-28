@@ -7,6 +7,7 @@ Labs
 ----
 
 * [Lab 1](l01) (programs, dynamic libraries)
+* [Lab 2](l02) (copycat)
 
 Assignments
 -----------
