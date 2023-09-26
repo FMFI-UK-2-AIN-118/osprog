@@ -1,0 +1,17 @@
+name: Student tests
+on: [pull_request]
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # fake a minimal travis environment for our old scripts to work
+      TRAVIS_BRANCH: ${{github.base_ref}}
+      TRAVIS_COMMIT_RANGE: HEAD^..HEAD
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+      - name: Tests
+        run: test/travis.sh
