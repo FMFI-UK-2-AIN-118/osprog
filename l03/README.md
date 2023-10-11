@@ -187,8 +187,8 @@ struct pollFds[numFds];
 // fill out the watched file descriptors info
 int i = 0;
 for (/* fd in fds we are interested in reading from */) {
-	pollFds[i] = fd;
-	pollFds[i] = POLLIN;
+	pollFds[i].fd = fd;
+	pollFds[i].events = POLLIN;
 	++i;
 }
 
@@ -205,10 +205,10 @@ while(running) {
 		// we actually have some data to read
 		for (i = 0; i < numFds; ++i) {
 			int fd = pollFds[i].fd;
-			if (pollFds[i] & POLLIN) {
+			if (pollFds[i].revents & POLLIN) {
 				// fd actually has something to read
 			}
-			else if (pollFds[i]) { // POLLERR or POLLHUP
+			else if (pollFds[i].revents) { // POLLERR or POLLHUP
 				// eof or other error
 			}
 		}
