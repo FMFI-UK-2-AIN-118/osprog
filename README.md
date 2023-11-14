@@ -12,6 +12,7 @@ Labs
 * [Lab 4](l04) (Buffer)
 * [Lab 5](l05) (RingBuffer)
 * [Lab 6](l06) (Echo)
+* [Lab 7](l07) (Reader/Writer)
 
 Assignments
 -----------
