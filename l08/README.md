@@ -3,7 +3,7 @@ Lab 8
 
 Submit the solution to [TCP chat](#tcp-chat)
 according to the [Submitting instructions](#submitting)
-before Wednesday 23.11. 23:59:59.
+before Wednesday 13.12. 23:59:59.
 
 *There are multiple bonuses listed at the end of this assignment. To receive the
 bonus points for them, mention which bonuses you solved and briefly describe how
