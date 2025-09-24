@@ -54,7 +54,7 @@ make || die "Re-running make failed"
 
 [[ number.o -nt number.h ]] || die "number.o was not rebuild!"
 [[ libnumber.so -nt number.h ]] || die "libnumber.so was not rebuilt!"
-[[ program.o -nt number.h ]] || die "libnumber.so was not rebuilt!"
+[[ program.o -nt number.h ]] || die "program.o was not rebuilt!"
 [[ program -nt number.h ]] || die "program was not rebuilt!"
 
 
