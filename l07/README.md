@@ -3,7 +3,7 @@ Lab 7
 
 Submit the solution to both tasks ([Reader](#reader) and [Writer](#writer))
 according to the [Submitting instructions](#submitting)
-before Wednesday Nov 11 23:59:59.
+before Wednesday Nov 12 23:59:59.
 
 *These tasks are "preparation" for a threaded "TCP chat" server
 that we will implement in a future assignment.*
