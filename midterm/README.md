@@ -11,7 +11,7 @@ id...
 Submit your solution of midterm here and make a pull request against the
 "midterm" branch before your deadline.
 
-You must take your exam before Sunday Dec 10 23:59:59.
+You must take your exam before Wednesday Dec 10 23:59:59.
 
 You can upload a document (simple text / markdown files are preferred) with
 your solutions, the original pdf with comments in it, a scanned/photographed
