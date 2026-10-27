@@ -210,6 +210,11 @@ and then run multiple "interactive" clients like in the first example, and these
 should be still "responsive".
 
 
+#### Automated tests
+
+There are now alos automated tests that you can run with `make test` (or `make
+test-hello`).
+
 Submitting
 ----------
 
