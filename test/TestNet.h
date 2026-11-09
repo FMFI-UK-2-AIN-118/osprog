@@ -5,6 +5,7 @@
 #include <cerrno>
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <netinet/in.h>
 #include <signal.h>
@@ -20,6 +21,21 @@
 #include <utility>
 
 #include "TestHelpers.h"
+
+/**
+ * Factor by which to stretch all the timeouts used by the network helpers,
+ * from the TEST_SLOWDOWN environment variable (default 1). Useful when the
+ * tested program runs much slower than usual (i.e. under valgrind).
+ */
+inline int testSlowdown()
+{
+	static const int factor = []() {
+		const char *env = getenv("TEST_SLOWDOWN");
+		int f = env ? atoi(env) : 1;
+		return f > 0 ? f : 1;
+	}();
+	return factor;
+}
 
 /**
  * Ask the kernel for a TCP port that is currently free.
@@ -59,7 +75,7 @@ public:
 	using ms = std::chrono::milliseconds;
 
 	/** Connect to localhost:port; throws on failure. */
-	explicit ClientSocket(uint16_t port, ms recvTimeout = ms(2000))
+	explicit ClientSocket(uint16_t port, ms recvTimeout = ms(2000 * testSlowdown()))
 		: fd_(socket(AF_INET, SOCK_STREAM, 0))
 	{
 		if (fd_ == -1)
@@ -141,6 +157,35 @@ public:
 		return result;
 	}
 
+	/**
+	 * Wait for the server to close the connection, discarding any data it
+	 * sends in the meantime.
+	 * @returns false if the connection is still open when the timeout hits
+	 * (or on an error other than a connection reset).
+	 */
+	bool waitForEof()
+	{
+		char buf[4096];
+		while (true) {
+			auto ret = read(fd_, buf, sizeof(buf));
+			if (ret == 0)
+				return true;
+			if (ret < 0 && errno == ECONNRESET)
+				return true;
+			if (ret < 0 && errno != EINTR)
+				return false;
+		}
+	}
+
+	/** Close the connection abruptly (the peer gets a RST instead of a FIN). */
+	void reset()
+	{
+		linger l = {1, 0};
+		setsockopt(fd_, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
+		close(fd_);
+		fd_ = -1;
+	}
+
 	/** Signal "no more data from me", but keep reading. */
 	void shutdownWrite() { shutdown(fd_, SHUT_WR); }
 
@@ -178,15 +223,47 @@ public:
 	~ServerProcess()
 	{
 		if (running()) {
-			kill(pid_, SIGTERM);
-			waitpid(pid_, nullptr, 0);
-		} else if (pid_ != 0) {
+			if (!terminate(std::chrono::milliseconds(2000 * testSlowdown()))) {
+				kill(pid_, SIGKILL);
+				waitpid(pid_, nullptr, 0);
+			}
+		} else if (!terminated_) {
 			// a server should run until we kill it
 			FAIL_CHECK(program_ << " terminated unexpectedly: " << describe(status_));
 		}
 	}
 
 	uint16_t port() const { return port_; }
+	pid_t pid() const { return pid_; }
+
+	/**
+	 * Send SIGTERM (if the server is still running) and wait for it to finish.
+	 * @returns true if the server terminated within the timeout.
+	 * The way it finished is then available in #exitedNormally / #exitStatus.
+	 */
+	bool terminate(std::chrono::milliseconds timeout)
+	{
+		if (running())
+			kill(pid_, SIGTERM);
+		return waitForExit(timeout);
+	}
+
+	/** Wait for the server to finish by itself; false if it didn't in time. */
+	bool waitForExit(std::chrono::milliseconds timeout)
+	{
+		auto deadline = std::chrono::steady_clock::now() + timeout;
+		while (running()) {
+			if (std::chrono::steady_clock::now() > deadline)
+				return false;
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		}
+		terminated_ = true;
+		return true;
+	}
+
+	/** True if the server exited by itself (not killed by a signal). */
+	bool exitedNormally() const { return WIFEXITED(status_); }
+	int exitStatus() const { return WEXITSTATUS(status_); }
 
 	/** True as long as the server process has not terminated. */
 	bool running()
@@ -231,6 +308,7 @@ private:
 	uint16_t port_;
 	pid_t pid_;
 	int status_ = 0;
+	bool terminated_ = false; // the exit was expected (see #waitForExit)
 };
 
 #endif //HAVE_TESTNET_H
